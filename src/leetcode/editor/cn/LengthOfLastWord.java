@@ -12,22 +12,36 @@
 //输出: 5
 // 
 // Related Topics 字符串 
-// 👍 212 👎 0
+// 👍 214 👎 0
 
-//题目编号：58
-package leetcode.editor.cn;
-//Java：最后一个单词的长度
-public class P58LengthOfLastWord{
-    public static void main(String[] args) {
-        Solution solution = new P58LengthOfLastWord().new Solution();
-        // TO TEST
-    }
-    //leetcode submit region begin(Prohibit modification and deletion)
+  
+  package leetcode.editor.cn;
+  public class LengthOfLastWord{
+      public static void main(String[] args) {
+           Solution solution = new LengthOfLastWord().new Solution();
+      }
+      //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int lengthOfLastWord(String s) {
-        return 0;
+//        方法1
+//        if(s.trim().length() == 0){
+//            return 0;
+//        }
+//        String[] words = s.split(" ");
+//        return words[words.length-1].length();
+//        方法2
+        int length = 0;
+        s = s.trim();
+        for(int i =s.length()-1;i>-1;i--){
+            if(' ' != s.charAt(i)){
+                length++;
+            }else {
+                break;
+            }
+        }
+        return length;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
 
-}
+  }
