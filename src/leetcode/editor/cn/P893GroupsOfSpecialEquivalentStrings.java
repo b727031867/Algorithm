@@ -79,14 +79,14 @@ public class P893GroupsOfSpecialEquivalentStrings {
                 char[] chars = currentStr.toCharArray();
                 int even = 0;
                 int odd = 0;
-                for (int i=0;i<chars.length;i++) {
-                     if(i%2 == 0){
-                         evens[even] = chars[i];
-                         even++;
-                     }else {
-                         odds[odd] = chars[i];
-                         odd++;
-                     }
+                for (int i = 0; i < chars.length; i++) {
+                    if (i % 2 == 0) {
+                        evens[even] = chars[i];
+                        even++;
+                    } else {
+                        odds[odd] = chars[i];
+                        odd++;
+                    }
                 }
                 Arrays.sort(evens);
                 Arrays.sort(odds);
