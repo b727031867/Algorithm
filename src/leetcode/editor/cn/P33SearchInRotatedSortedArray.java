@@ -55,6 +55,9 @@ public class P33SearchInRotatedSortedArray {
         int[] test2 = {4, 5, 6, 7, 0, 1, 2};
         int tar2 = 3;
         System.out.println(solution.search(test2, tar2));
+        int[] test3 = {1, 2};
+        int tar3 = 2;
+        System.out.println(solution.search(test3, tar3));
     }
 
     //leetcode submit region begin(Prohibit modification and deletion)
@@ -65,23 +68,32 @@ public class P33SearchInRotatedSortedArray {
             }
             for (int i = 0; i < nums.length - 1; i++) {
                 if (nums[i] > nums[i + 1]) {
-                    int[] leftArray = new int[i + 1];
-                    System.arraycopy(nums, 0, leftArray, 0, i + 1);
-                    int[] rightArray = new int[nums.length - i - 1];
-                    System.arraycopy(nums, i + 1, rightArray, 0, nums.length - i - 1);
-                    int left = Arrays.binarySearch(leftArray, target);
-                    int right = Arrays.binarySearch(rightArray, target);
+                    int left = binarySearch(nums, 0, i, target);
+                    int right = binarySearch(nums, i + 1, nums.length - 1, target);
                     if (left > -1 && right < 0) {
                         return left;
                     } else if (left < 0 && right > -1) {
-                        return right + leftArray.length;
+                        return right;
                     } else {
                         return -1;
                     }
                 }
             }
-            int index = Arrays.binarySearch(nums, target);
-            return Math.max(index, -1);
+            return binarySearch(nums, 0, nums.length - 1, target);
+        }
+
+        private int binarySearch(int[] array, int left, int right, int target) {
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+                if (array[mid] == target) {
+                    return mid;
+                } else if (target > array[mid]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            return -1;
         }
     }
 //leetcode submit region end(Prohibit modification and deletion)
