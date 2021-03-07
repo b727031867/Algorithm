@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #Version to install
-mysql_version="8.0.23";
+mysql_version="8.0.13";
 log_expired_days="15";
 mysql_access_port="3306";
 character="utf8mb4";
-mysql_root_password="123456";
+mysql_root_password="root";
 #example 192.168.174.129:5000;
 registryIp=192.168.174.129:5000;
 echo "start install docker mysql:${mysql_version}"
