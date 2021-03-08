@@ -1,96 +1,125 @@
 #!/usr/bin/env bash
+## test
+set -e
 # -a 是否需要配置ssh无密码连接 1为是 0为否
 # -b 域名  例如 yourdomain.com
-set -e
+# -c A机IP  默认是 192.168.174.130
+# -d B机IP  默认是 192.168.174.131
 isNeedSSH="0"
 domain=tartarus.com
+A_IP=192.168.174.130
+B_IP=192.168.174.131
 harborOfflineInstaller="harbor-offline-installer-v2.2.0.tgz"
-#while getopts ":a:b:" optname
-#do
-#    case "$optname" in
-#      "a")
-#        isNeedSSH=$OPTARG
-#        echo "create ssh connection param is $OPTARG";;
-#      "b")
-#        domain=$OPTARG
-#        echo "domain value is $OPTARG";;
-#      ":")
-#        echo "No argument value for option $OPTARG"
-#        exit 1;;
-#      "?")
-#        echo "Unknown option $OPTARG"
-#        exit 1;;
-#      *)
-#        echo "Unknown error while processing options"
-#        exit 1;;
-#    esac
-#done
-#if [[ isNeedSSH -eq "1" ]];
-#then
-#    ssh-keygen
-#    ssh-copy-id -i .ssh/id_rsa.pub  root@192.168.174.130
-#fi
-#echo "start Generate a Certificate Authority Certificate"
-#
-#openssl genrsa -out ca.key 4096
-#openssl req -x509 -new -nodes -sha512 -days 36500 \
-# -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=${domain}" \
-# -key ca.key \
-# -out ca.crt
-#echo "Generate down"
-#echo "start Generate a Server Certificate"
-#openssl genrsa -out ${domain}.key 4096
-#openssl req -sha512 -new \
-#    -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=${domain}" \
-#    -key ${domain}.key \
-#    -out ${domain}.csr
-#cat > v3.ext <<-EOF
-#authorityKeyIdentifier=keyid,issuer
-#basicConstraints=CA:FALSE
-#keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-#extendedKeyUsage = serverAuth
-#subjectAltName = @alt_names
-#
-#[alt_names]
-#DNS.1=${domain}
-#EOF
-#openssl x509 -req -sha512 -days 3650 \
-#    -extfile v3.ext \
-#    -CA ca.crt -CAkey ca.key -CAcreateserial \
-#    -in ${domain}.csr \
-#    -out ${domain}.crt
-#echo "Generate Server Certificate down"
-#echo "Start Provide the Certificates to Harbor and Docker"
-#mkdir -p /data/cert/
-#cp ${domain}.crt /data/cert/
-#cp ${domain}.key /data/cert/
-#openssl x509 -inform PEM -in ${domain}.crt -out ${domain}.cert
-#mkdir -p /etc/docker/certs.d/${domain}
-#cp ${domain}.cert /etc/docker/certs.d/${domain}/
-#cp ${domain}.key /etc/docker/certs.d/${domain}/
-#cp ca.crt /etc/docker/certs.d/${domain}/
-#systemctl restart docker
-##配置系统信任证书
-#cp ${domain}.crt /etc/pki/ca-trust/source/anchors/${domain}.crt
-#update-ca-trust
-#echo "End Provide the Certificates to Harbor and Docker"
-#echo "Start Provide the Certificates to Harbor and Docker at remote IP 192.168.174.130"
-##设置另外一台机器信任此证书
-#ssh root@192.168.174.130 > /dev/null 2>&1 << eeooff
-#mkdir -p /etc/docker/certs.d/${domain}
-#exit
-#eeooff
-#scp ${domain}.cert root@192.168.174.130:/etc/docker/certs.d/${domain}/
-#scp ${domain}.key root@192.168.174.130:/etc/docker/certs.d/${domain}/
-#scp ca.crt root@192.168.174.130:/etc/docker/certs.d/${domain}/
-#scp ${domain}.crt root@192.168.174.130:/etc/pki/ca-trust/source/anchors/${domain}.crt
-#ssh root@192.168.174.130 > /dev/null 2>&1 << eeooff
-#systemctl restart docker
-#update-ca-trust
-#exit
-#eeooff
-#echo "END Start Provide the Certificates to Harbor and Docker at remote IP 192.168.174.130"
-#echo "Start install harbor"
+while getopts ":a:b:c:d:" optname
+do
+   case "$optname" in
+     "a")
+       isNeedSSH=$OPTARG
+       echo "create ssh connection param is $OPTARG";;
+     "b")
+       domain=$OPTARG
+       echo "domain value is $OPTARG";;
+     "c")
+       A_IP=$OPTARG
+       echo "A ip is $OPTARG";;
+     "d")
+       B_IP=$OPTARG
+       echo "B ip is $OPTARG";;
+     ":")
+       echo "No argument value for option $OPTARG"
+       exit 1;;
+     "?")
+       echo "Unknown option $OPTARG"
+       exit 1;;
+     *)
+       echo "Unknown error while processing options"
+       exit 1;;
+   esac
+done
+if [[ isNeedSSH -eq "1" ]];
+then
+   ssh-keygen
+   ssh-copy-id -i .ssh/id_rsa.pub  root@${A_IP}
+   ssh-copy-id -i .ssh/id_rsa.pub  root@${B_IP}
+fi
+echo "start Generate a Certificate Authority Certificate"
+
+openssl genrsa -out ca.key 4096
+openssl req -x509 -new -nodes -sha512 -days 36500 \
+-subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=${domain}" \
+-key ca.key \
+-out ca.crt
+echo "Generate down"
+echo "start Generate a Server Certificate"
+openssl genrsa -out ${domain}.key 4096
+openssl req -sha512 -new \
+   -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=${domain}" \
+   -key ${domain}.key \
+   -out ${domain}.csr
+cat > v3.ext <<-EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1=${domain}
+EOF
+openssl x509 -req -sha512 -days 3650 \
+   -extfile v3.ext \
+   -CA ca.crt -CAkey ca.key -CAcreateserial \
+   -in ${domain}.csr \
+   -out ${domain}.crt
+echo "Generate Server Certificate down"
+echo "Start Provide the Certificates to Harbor and Docker"
+mkdir -p /data/cert/
+cp ${domain}.crt /data/cert/
+cp ${domain}.key /data/cert/
+openssl x509 -inform PEM -in ${domain}.crt -out ${domain}.cert
+mkdir -p /etc/docker/certs.d/${domain}
+cp ${domain}.cert /etc/docker/certs.d/${domain}/
+cp ${domain}.key /etc/docker/certs.d/${domain}/
+cp ca.crt /etc/docker/certs.d/${domain}/
+systemctl restart docker
+#配置系统信任证书
+cp ${domain}.crt /etc/pki/ca-trust/source/anchors/${domain}.crt
+update-ca-trust
+echo "End Provide the Certificates to Harbor and Docker"
+echo "Start Provide the Certificates to Harbor and Docker at remote IP ${A_IP}"
+#设置130机器信任此证书
+ssh root@${A_IP} > /dev/null 2>&1 << eeooff
+mkdir -p /etc/docker/certs.d/${domain}
+exit
+eeooff
+scp ${domain}.cert root@${A_IP}:/etc/docker/certs.d/${domain}/
+scp ${domain}.key root@${A_IP}:/etc/docker/certs.d/${domain}/
+scp ca.crt root@${A_IP}:/etc/docker/certs.d/${domain}/
+scp ${domain}.crt root@${A_IP}:/etc/pki/ca-trust/source/anchors/${domain}.crt
+ssh root@${A_IP} > /dev/null 2>&1 << eeooff
+systemctl restart docker
+update-ca-trust
+exit
+eeooff
+echo "END Start Provide the Certificates to Harbor and Docker at remote IP ${A_IP}"
+
+#设置131机器信任此证书
+ssh root@${B_IP} > /dev/null 2>&1 << eeooff
+mkdir -p /etc/docker/certs.d/${domain}
+exit
+eeooff
+scp ${domain}.cert root@${B_IP}:/etc/docker/certs.d/${domain}/
+scp ${domain}.key root@${B_IP}:/etc/docker/certs.d/${domain}/
+scp ca.crt root@${B_IP}:/etc/docker/certs.d/${domain}/
+scp ${domain}.crt root@${B_IP}:/etc/pki/ca-trust/source/anchors/${domain}.crt
+ssh root@${B_IP} > /dev/null 2>&1 << eeooff
+systemctl restart docker
+update-ca-trust
+exit
+eeooff
+echo "END Start Provide the Certificates to Harbor and Docker at remote IP ${B_IP}"
+
+echo "Start install harbor"
 
 if [[ ! -f "${harborOfflineInstaller}" ]];
 then
@@ -101,9 +130,7 @@ firewall-cmd --zone=public --add-port=443/tcp --permanent
 firewall-cmd --zone=public --add-port=4443/tcp --permanent
 firewall-cmd --zone=public --add-port=80/tcp --permanent
 firewall-cmd --reload
-tar xvf ${harborOfflineInstaller}
-cd harbor
-touch harbor.yml
+tar xvf ${harborOfflineInstaller} && cd harbor && touch harbor.yml
 cat > harbor.yml <<EOF
 # Configuration file of Harbor
 
@@ -307,4 +334,5 @@ proxy:
 #   port: 9090
 #   path: /metrics
 EOF
+sh install.sh
 
