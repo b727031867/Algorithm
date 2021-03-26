@@ -9,8 +9,12 @@ isNeedSSH="0"
 domain=tartarus.com
 A_IP=192.168.174.130
 B_IP=192.168.174.131
+#镜像仓库要读取的网卡名称
+INTERNET_NAME=eth0
+#镜像仓库的IP(默认获取本机IP)
+REGISTER_IP=`ip a show dev ${INTERNET_NAME} | grep -w "inet" | awk '{print $2}' | awk -F '/' '{print $1}'`
 harborOfflineInstaller="harbor-offline-installer-v2.2.0.tgz"
-while getopts ":a:b:c:d:" optname
+while getopts ":a:b:c:d:e:f:" optname
 do
    case "$optname" in
      "a")
@@ -25,6 +29,12 @@ do
      "d")
        B_IP=$OPTARG
        echo "B ip is $OPTARG";;
+     "e")
+       INTERNET_NAME=$OPTARG
+       echo "current network card name is $OPTARG";;
+     "f")
+       REGISTER_IP=$OPTARG
+       echo "current mirror warehouse ip is $OPTARG";;
      ":")
        echo "No argument value for option $OPTARG"
        exit 1;;
@@ -85,11 +95,18 @@ systemctl restart docker
 #配置系统信任证书
 cp ${domain}.crt /etc/pki/ca-trust/source/anchors/${domain}.crt
 update-ca-trust
+#配置本机host文件
+cat >> /etc/hosts << EOF
+${REGISTER_IP} ${domain}
+EOF
 echo "End Provide the Certificates to Harbor and Docker"
 echo "Start Provide the Certificates to Harbor and Docker at remote IP ${A_IP}"
 #设置130机器信任此证书
 ssh root@${A_IP} > /dev/null 2>&1 << eeooff
 mkdir -p /etc/docker/certs.d/${domain}
+cat >> /etc/hosts << EOF
+${REGISTER_IP} ${domain}
+EOF
 exit
 eeooff
 scp ${domain}.cert root@${A_IP}:/etc/docker/certs.d/${domain}/
@@ -106,6 +123,9 @@ echo "END Start Provide the Certificates to Harbor and Docker at remote IP ${A_I
 #设置131机器信任此证书
 ssh root@${B_IP} > /dev/null 2>&1 << eeooff
 mkdir -p /etc/docker/certs.d/${domain}
+cat >> /etc/hosts << EOF
+${REGISTER_IP} ${domain}
+EOF
 exit
 eeooff
 scp ${domain}.cert root@${B_IP}:/etc/docker/certs.d/${domain}/
