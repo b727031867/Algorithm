@@ -47,6 +47,7 @@ import java.util.List;
 
 //Java：三数之和
 public class P15ThreeSum {
+
     public static void main(String[] args) {
         Solution solution = new P15ThreeSum().new Solution();
         // TO TEST
