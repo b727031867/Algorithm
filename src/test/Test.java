@@ -1,7 +1,11 @@
 package test;
 
+import sun.misc.Unsafe;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author GXF
@@ -19,11 +23,43 @@ public class Test<B> {
     }
 
     public static void main(String[] args) {
-        {
-            byte[] data = new byte[1024 * 1024 * 8];
+        String a = "aaa";
+        String n = "bb";
+        AtomicReference<String> strRe = new AtomicReference<>(a);
+        String s = strRe.get();
+        strRe.set(n);
+        strRe.compareAndSet(a,s);
+
+        int[] ac = new int[660];
+        Arrays.asList(ac);
+
+        Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        synchronized (this){
+                            System.out.println("同步等待");
+                            wait(100);
+                            System.out.println("等待完毕");
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread.start();
+        try {
+            System.out.println("等待子线程");
+            thread.join();
+            System.out.println("等待子线程结束");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        String a = "";
-        System.gc();
+//        {
+//            byte[] data = new byte[1024 * 1024 * 8];
+//        }
+//        String a = "";
+//        System.gc();
     }
 
 //    public static void main(String[] args) {
