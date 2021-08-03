@@ -56,8 +56,8 @@
 
 package leetcode.editor.cn;
 
-import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,6 +65,13 @@ import java.util.List;
 public class P39CombinationSum {
     public static void main(String[] args) {
         Solution solution = new P39CombinationSum().new Solution();
+        List<List<Integer>> res = solution.combinationSum(new int[]{2,7,6,3,5,1}, 9);
+        for (List<Integer> integers : res) {
+            for (Integer integer : integers) {
+                System.out.print(integer + " ");
+            }
+            System.out.println();
+        }
     }
 
     //leetcode submit region begin(Prohibit modification and deletion)
@@ -73,18 +80,25 @@ public class P39CombinationSum {
         LinkedList<Integer> row = new LinkedList<>();
 
         public List<List<Integer>> combinationSum(int[] candidates, int target) {
-            backTracked(candidates, target, target);
+            Arrays.sort(candidates);
+            backTracked(candidates, target, 0,0);
             return res;
         }
 
-        private void backTracked(int[] candidates, int target, int currentTarget) {
-            if (currentTarget == target) {
-                res.add(row);
+        private void backTracked(int[] candidates, int target, int currentTarget,int start) {
+            if(currentTarget > target){
                 return ;
             }
-            for(int i = 0 ; i < candidates.length ; i++){
+            if (currentTarget == target) {
+                res.add(new ArrayList<>(row));
+                return ;
+            }
+            for(int i = start ; i < candidates.length  && currentTarget + candidates[i] <= target; i++){
+                currentTarget += candidates[i];
                 row.add(candidates[i]);
-                backTracked(candidates, target, currentTarget - candidates[i]);
+                backTracked(candidates, target, currentTarget,i);
+                row.removeLast();
+                currentTarget -= candidates[i];
             }
 
         }
