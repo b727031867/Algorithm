@@ -58,6 +58,7 @@ package leetcode.editor.cn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,6 +97,12 @@ public class P39CombinationSum {
             for(int i = start ; i < candidates.length  && currentTarget + candidates[i] <= target; i++){
                 currentTarget += candidates[i];
                 row.add(candidates[i]);
+                Deque<Character> deque = new LinkedList<>();
+                List<String> res = new ArrayList<>();
+                StringBuilder sb = new StringBuilder();
+                sb.append('a');
+                char [] a = new char[1];
+                new String(a);
                 backTracked(candidates, target, currentTarget,i);
                 row.removeLast();
                 currentTarget -= candidates[i];

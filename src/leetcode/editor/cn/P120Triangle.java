@@ -44,78 +44,60 @@
 // 你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题吗？ 
 // 
 // Related Topics 数组 动态规划 
-// 👍 795 👎 0
+// 👍 791 👎 0
 
 package leetcode.editor.cn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 //java:三角形最小路径和
 public class P120Triangle{
     public static void main(String[] args){
         Solution solution = new P120Triangle().new Solution();
-        //[[2],[3,4],[6,5,7],[4,1,8,3]]
         List<List<Integer>> triangle = new ArrayList<>();
+
         List<Integer> row1 = new ArrayList<>();
-        row1.add(2);
+        row1.add(-1);
         triangle.add(row1);
 
         List<Integer> row2 = new ArrayList<>();
+        row2.add(2);
         row2.add(3);
-        row2.add(4);
         triangle.add(row2);
 
         List<Integer> row3 = new ArrayList<>();
-        row3.add(6);
-        row3.add(5);
-        row3.add(7);
+        row3.add(1);
+        row3.add(-1);
+        row3.add(-3);
         triangle.add(row3);
 
-        List<Integer> row4 = new ArrayList<>();
-        row4.add(4);
-        row4.add(1);
-        row4.add(8);
-        row4.add(3);
-        triangle.add(row4);
+//        List<Integer> row4 = new ArrayList<>();
+//        row4.add(4);
+//        row4.add(1);
+//        row4.add(8);
+//        row4.add(3);
+//        triangle.add(row4);
 
         int res = solution.minimumTotal(triangle);
+
         System.out.println(res);
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-        public int minimumTotal(List<List<Integer>> triangle) {
-            int [][] dp = new int[2][triangle.size()];
-            for(int i = 0 ; i < triangle.size() ; i++){
-                List<Integer> row = triangle.get(i);
-                for(int j = 0 ; j < row.size() ; j++){
-                    if(i % 2 == 0){
-                        if(j == 0){
-                            dp[0][j] = row.get(j) + dp[1][j];
-                        }else if(j == row.size() - 1){
-                            dp[0][j] = row.get(j) + dp[1][j - 1];
-                        }else{
-                            dp[0][j] = Math.min(dp[1][j - 1],dp[1][j]) + row.get(j);
-                        }
-                    }else{
-                        if(j == 0){
-                            dp[1][j] = row.get(j) + dp[0][j];
-                        }else if(j == row.size() - 1){
-                            dp[1][j] = row.get(j) + dp[0][j - 1];
-                        }else{
-                            dp[1][j] = Math.min(dp[0][j - 1],dp[0][j]) + row.get(j);
-                        }
-                    }
-
-                }
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int[] dp = new int[triangle.size()  +  1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        dp[1] = triangle.get(0).get(0);
+        for(int row = 2 ; row <= triangle.size(); row++){
+            for(int i = 0 ; i < row - 1; i++){
+                dp[row] = Math.min(dp[row],Math.min(triangle.get(row - 1).get(i + 1) + dp[row - 1],triangle.get(row - 1).get(i) + dp[row - 1]));
             }
-            int res = Integer.MAX_VALUE;
-            int temp = (triangle.size() - 1) % 2;
-            for(int i = 0 ; i < dp[temp].length ; i++){
-                res = Math.min(dp[temp][i],res);
-            }
-            return res;
         }
+        return dp[triangle.size()];
+    }
 }
 //leetcode submit region end(Prohibit modification and deletion)
 

@@ -23,44 +23,56 @@ public class Test<B> {
     }
 
     public static void main(String[] args) {
-        String a = "aaa";
-        String n = "bb";
-        AtomicReference<String> strRe = new AtomicReference<>(a);
-        String s = strRe.get();
-        strRe.set(n);
-        strRe.compareAndSet(a,s);
-
-        int[] ac = new int[660];
-        Arrays.asList(ac);
-
-        Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        synchronized (this){
-                            System.out.println("同步等待");
-                            wait(100);
-                            System.out.println("等待完毕");
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            thread.start();
-        try {
-            System.out.println("等待子线程");
-            thread.join();
-            System.out.println("等待子线程结束");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-//        {
-//            byte[] data = new byte[1024 * 1024 * 8];
-//        }
-//        String a = "";
-//        System.gc();
+        testStringBuilder();
     }
+
+    private static void testStringBuilder(){
+        StringBuilder builder = new StringBuilder("赣");
+        String 赣 = new StringBuilder("赣").substring(0, 0);
+        System.out.println(赣);
+        int length = builder.length();
+        System.out.println(length);
+    }
+
+//    public static void main(String[] args) {
+//        String a = "aaa";
+//        String n = "bb";
+//        AtomicReference<String> strRe = new AtomicReference<>(a);
+//        String s = strRe.get();
+//        strRe.set(n);
+//        strRe.compareAndSet(a,s);
+//
+//        int[] ac = new int[660];
+//        Arrays.asList(ac);
+//
+//        Thread thread = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        synchronized (this){
+//                            System.out.println("同步等待");
+//                            wait(100);
+//                            System.out.println("等待完毕");
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            thread.start();
+//        try {
+//            System.out.println("等待子线程");
+//            thread.join();
+//            System.out.println("等待子线程结束");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+////        {
+////            byte[] data = new byte[1024 * 1024 * 8];
+////        }
+////        String a = "";
+////        System.gc();
+//    }
 
 //    public static void main(String[] args) {
 //        Test<Fruit2> test = new Test<>();
@@ -72,20 +84,20 @@ public class Test<B> {
 //    }
 }
 
-class Plant {
-}
-
-interface A {
-}
-
-interface B extends A {
-}
-
-class Fruit2 implements B {
-}
-
-class Fruit extends Plant implements B {
-    void test1() {
-        System.out.println("test1");
-    }
-}
+//class Plant {
+//}
+//
+//interface A {
+//}
+//
+//interface B extends A {
+//}
+//
+//class Fruit2 implements B {
+//}
+//
+//class Fruit extends Plant implements B {
+//    void test1() {
+//        System.out.println("test1");
+//    }
+//}
